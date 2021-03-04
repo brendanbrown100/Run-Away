@@ -1,5 +1,5 @@
 This quick code is not very detailed only being made in a couple of hours but basic instructions include
-The player is the red ball while the white balls are enemies
+The player is the red square while the white square are enemies
 To start the game, chose between clicking h for hard or g for easy
 For the hard mode, the game will reset if the player is stationary for too long, while easy does not do this
 The player will only be able to move when the first two balls are sent out

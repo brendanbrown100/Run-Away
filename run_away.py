@@ -1,5 +1,5 @@
 # Run-Away
-Game were there is a red ball as a player that is trying to not touch the white balls.
+#Game were there is a red ball as a player that is trying to not touch the white balls.
 import pygame
 from random import randint
 import random

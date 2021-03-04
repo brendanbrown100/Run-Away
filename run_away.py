@@ -33,6 +33,7 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Survive")
 # Scoring variables
 score = 0
+game_beging = True
 high_score = 0
 start_game = False
 game_start = False
@@ -44,6 +45,7 @@ hard = False
 
 # player's ability to move
 movement = False
+collitions = True 
 
 #clock
 clock = pygame.time.Clock()
@@ -163,13 +165,16 @@ pygame.init()
 
 
 def collition():
-    global run, enemy_counter, enemy_knoledge, times_played, score, timer, score_game, movement, seconds, start_game, hard, game_start
+    global run, enemy_counter, enemy_knoledge, times_played, score, timer, score_game, movement, seconds, start_game, hard, game_start, collitions
     # cheacking collition between ball and player
     if pygame.sprite.collide_rect(ball,player) or pygame.sprite.collide_rect(ball_2,player) or pygame.sprite.collide_rect(ball_3, player) or pygame.sprite.collide_rect(ball_4,player) or pygame.sprite.collide_rect(ball_5,player)or pygame.sprite.collide_rect(ball_6,player) or pygame.sprite.collide_rect(ball_7,player) or pygame.sprite.collide_rect(ball_8,player) or pygame.sprite.collide_rect(ball_9,player) or pygame.sprite.collide_rect(ball_10,player):
 
+        print ("PLAYER HAS COLLIDED WITH BALL")
         #telling how many balls were present at death
         print ("YOU SURVIVED WITH " + str(enemy_knoledge - 1) + " ENEMIES")
         movement = False
+        collitions = False
+        game_start = False
         
         #reseting the score
         score = 0
@@ -178,31 +183,44 @@ def collition():
 
         #reseting pos of all obj
         time_to_play_again()
+
+def game_starting():
+    global run, enemy_counter, enemy_knoledge, times_played, score, timer, score_game, movement, seconds, start_game, hard, game_start, collitions, game_beging
     
     key = pygame.key.get_pressed()
     
     # if space is pressed the game will stop and show your high score
     if key[pygame.K_SPACE]:
+        print ("SPACE WAS PRESSED")
         run = False
         # printing your high score and how long you survived to acheive the high score
         print ("YOUR HIGH SCORE WAS " + str(high_score))
         seconds = round(high_score/60)
         print ("YOU SURVIVED ABOUT " + str(seconds) + " SECONDS OR EXACTLY " + str(high_score/60) + " seconds")
+    
+    if key[pygame.K_e]:
+        collitions = True
+        game_start = True
 
     # help know how many balls can be on screen 
     if enemy_counter > enemy_knoledge:
         enemy_knoledge += 1
 
-    #setting diffuculty to hard
-    if key[pygame.K_h]:
-        hard = True
-        game_start = True
 
-    #setting diffuculty to easy
+    if game_beging:
 
-    if key[pygame.K_g]:
-        hard = False
-        game_start = True
+        #setting diffuculty to hard
+        if key[pygame.K_h]:
+            hard = True
+            game_start = True
+            game_beging = False
+
+        #setting diffuculty to easy
+
+        if key[pygame.K_g]:
+            hard = False
+            game_start = True
+            game_beging = False
         
 
 def whitch_ball(obj):
@@ -212,7 +230,7 @@ def whitch_ball(obj):
     obj.update()
     pygame.draw.rect(screen, WHITE, obj)
 def set_ball_pos(pos):
-    # sets pos of balls when 
+    # sets pos of balls when
     pos.x = 30
     pos.y = 30
     pos.velocity = [randint(4,8),randint(1,8)]
@@ -220,7 +238,7 @@ def set_ball_pos(pos):
 def time_to_play_again():
     # resetting all balls to there previuse pos to start the game again
     
-    global enemy_knoledge, enemy_counter
+    global enemy_knoledge, enemy_counter, ball, ball_2, ball_3, ball_4, ball_5, ball_6, ball_7, ball_8, ball_9, ball_10
     set_ball_pos(ball)
     set_ball_pos(ball_2)
     set_ball_pos(ball_3)
@@ -248,7 +266,9 @@ while run:
         high_score = score
 
     # calling function for collition
-    collition()
+    game_starting()
+    if collitions:
+        collition()
 
     #using timer to cheack if a ball should be made
     if game_start:
@@ -312,6 +332,10 @@ while run:
             whitch_ball(ball_10)
 
         
+    
+    
+    
+
     
     
     

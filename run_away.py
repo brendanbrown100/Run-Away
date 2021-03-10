@@ -6,48 +6,100 @@ import random
 import sys
 import math
 import os
+import time
+# SIZE OF SCREEN
+# if changed the game will change to adapt to the size
+# CHANGE X ONLY
+# Game is best played when x is 600
+
+size_x = 700 # CHANGE THIS NUMBER ONLY 
+
+# X IS 600 MINIMUM
+#DONT TOUCH THESE THEY GO WIITH LINES ABOVE
+if size_x < 600:
+    size_x = 600
+size_y = size_x/1.5
+
 
 # variables
 # Frames Per Second
 fps = 60
+
 # Starting x and y position for Balls
 x = 1
 y = 1
+
+# zero for pos
+zero = 0
+
 # Timer for calculating when a new ball is added
 timer = 0
-winning_timer = 0
+winning_timer = 2000
+
 # time is used to cheack if you are moving
 time = 0
+
 # How many enemies are present on screen
 enemy_counter = 2
 enemy_knoledge = 2
-# How fast player can move
-player_speed = 4
+
 # Colors for the game
 RED = (255,0,0)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
+
 # Defining the screen
-size = (600, 400)
-screen = pygame.display.set_mode(size)
+screen_area = size_x * size_y
+screen = pygame.display.set_mode((int(size_x), int(size_y)))
 pygame.display.set_caption("Survive")
+
+#player size
+player_size = screen_area/15000
+
+# ball size
+ball_size = screen_area/24000
+
+# how long before new ball is releaced
+new_ball_time = 250
+
+# How fast player can move
+player_speed = screen_area/60000
+
+# Speed of ball
+speed_1 = 4#screen_area/60000
+speed_2 = 8#screen_area/30000
+speed_3 = 1#screen_area/120000
+speed_4 = 8#screen_area/30000
+
 # Scoring variables
 score = 0
 game_beging = True
 high_score = 0
 start_game = False
 game_start = False
-# how long player survived about
+
+# Starting Lines
+print ("YOU USE THE WASD KEYS TO MOVE ONLY WHEN THE FIRST BALLS IS SENT OUT")
+print ("TO CHOOSE A DIFFICULTY PRESS G = EASY OR H = HARD")
+print ("AFTER PRESSING A DIFFICULTY WAIT A FEW SECONDS AND THE FIRST TWO BALL WILL BE SENT OUT")
+print ("IF YOU DIE PRESS E TO PLAY AGAIN OR YOU CAN PRESS SPACE AT ANYTIME TO END THE GAME")
+print ("HAVE FUN")
+# ending lines
+move_play = "YOU NEED TO MOVE TO PLAY"
+collide_ball = "PLAYER HAS COLLIDED WITH BALL"
+space_play = "SPACE BAR WAS PRESSED"
+
+# How long player survived about
 seconds = 0
 
-# game diffuculty
+# Game diffuculty when true = hard, false = easy
 hard = False
 
-# player's ability to move
+# Player's ability to move
 movement = False
-collitions = True 
+collitions = False 
 
-#clock
+# Clock
 clock = pygame.time.Clock()
 
 # setting run as True to run the game
@@ -61,12 +113,12 @@ class Player(object):
     def __init__(self, x, y):
         # Setting pos of the player
         
-        self.x = 584
+        self.x = size_x - player_size
         self.y = 0
         
-        self.rect = pygame.Rect(self.x, self.y, 16, 16)
+        self.rect = pygame.Rect(self.x, self.y, player_size, player_size)
     def move(self):
-        global time, run, movement, hard, score, start_game, timer
+        global time, run, movement, hard, score, start_game, timer, move_play
         
         key = pygame.key.get_pressed()
         # Movement of the player
@@ -75,39 +127,39 @@ class Player(object):
         # can only move when movement is True
         if movement:
             time += 1
-            if key[pygame.K_s] and self.y < 384:
+            if key[pygame.K_s] and self.y < size_y - player_size:
                 time = 0
                 self.y += player_speed
-            if key[pygame.K_w] and self.y > 16:
+            if key[pygame.K_w] and self.y > zero:
                 time = 0
                 self.y -= player_speed
-            if key[pygame.K_a] and self.x > 0:
+            if key[pygame.K_a] and self.x > zero:
                 time = 0
                 self.x -= player_speed
-            if key[pygame.K_d] and self.x < 584:
+            if key[pygame.K_d] and self.x < size_x - player_size:
                 time = 0 
                 self.x += player_speed
             if hard:
                 if time > 100:
                     time = 0
                     # printing your high score and how long you survived to acheive the high score
-                    print ("YOU NEED TO MOVE TO PLAY")
+                    print (move_play)
 
-                    #stop player from moving
+                    # stop player from moving
                     movement = False
             
-                    #reseting the score
+                    # reseting the score
                     score = 0
                     start_game = 0
                     timer = 0
 
-                    #reseting pos of all obj
+                    # reseting pos of all obj
                     time_to_play_again()
                 
 
     def draw(self):
         # drawing rect for player
-        self.rect = pygame.Rect(self.x, self.y, 16,16)
+        self.rect = pygame.Rect(self.x, self.y, player_size, player_size)
         
 
 # ball class
@@ -118,11 +170,10 @@ class Ball(pygame.sprite.Sprite):
         # setting pos of the ball
         self.x = x
         self.y = y
-
-        self.rect = pygame.Rect(self.x, self.y, 10, 10)
+        self.rect = pygame.Rect(self.x, self.y, ball_size, ball_size)
 
         # setting x and y velocity of the ball
-        self.velocity = [randint(4,8),randint(1,8)]
+        self.velocity = [randint(int(speed_1),int(speed_2)),randint(int(speed_3),int(speed_4))]
 
         
     def update(self):
@@ -132,22 +183,22 @@ class Ball(pygame.sprite.Sprite):
         self.y += self.velocity[1]
         
     def collition_with_walls(self):
-        
-        #Check if the ball is bouncing against any of the 4 walls
-        if self.x>=590:
+        # Check if the ball is bouncing against any of the 4 walls
+        if self.x >= size_x - ball_size:
             self.velocity[0] = -self.velocity[0]
-        if self.x<=0:
+        if self.x <= zero:
             self.velocity[0] = -self.velocity[0]
-        if self.y>390:
+        if self.y > size_y - ball_size:
             self.velocity[1] = -self.velocity[1]
-        if self.y<0:
+        if self.y <= zero:
             self.velocity[1] = -self.velocity[1]
     def draw(self):
-        #drawing our ball
-        self.rect = pygame.Rect(self.x, self.y, 10,10)
+        # drawing our ball
+        self.rect = pygame.Rect(self.x, self.y, ball_size,ball_size)
+
 
        
-#classes are being defined 
+# classes are being defined 
 player = Player(50,50)
 ball = Ball(x,y)
 ball_2 = Ball(x,y)
@@ -161,27 +212,27 @@ ball_9 = Ball(x,y)
 ball_10 = Ball(x,y)
 pygame.init()
 
-#functions for the game 
-
+# functions for the game 
 
 def collition():
-    global run, enemy_counter, enemy_knoledge, times_played, score, timer, score_game, movement, seconds, start_game, hard, game_start, collitions
+    global run, enemy_counter, enemy_knoledge, times_played, score, timer, score_game, movement, seconds, start_game, hard, game_start, collitions, collide_ball
     # cheacking collition between ball and player
+    
     if pygame.sprite.collide_rect(ball,player) or pygame.sprite.collide_rect(ball_2,player) or pygame.sprite.collide_rect(ball_3, player) or pygame.sprite.collide_rect(ball_4,player) or pygame.sprite.collide_rect(ball_5,player)or pygame.sprite.collide_rect(ball_6,player) or pygame.sprite.collide_rect(ball_7,player) or pygame.sprite.collide_rect(ball_8,player) or pygame.sprite.collide_rect(ball_9,player) or pygame.sprite.collide_rect(ball_10,player):
-
-        print ("PLAYER HAS COLLIDED WITH BALL")
-        #telling how many balls were present at death
+        print (collide_ball)
+        
+        # telling how many balls were present at death
         print ("YOU SURVIVED WITH " + str(enemy_knoledge - 1) + " ENEMIES")
         movement = False
         collitions = False
         game_start = False
         
-        #reseting the score
+        # reseting the score
         score = 0
         start_game = 0
         timer = 0
 
-        #reseting pos of all obj
+        # reseting pos of all obj
         time_to_play_again()
 
 def game_starting():
@@ -191,7 +242,8 @@ def game_starting():
     
     # if space is pressed the game will stop and show your high score
     if key[pygame.K_SPACE]:
-        print ("SPACE WAS PRESSED")
+        print (space_play)
+        collitions = False
         run = False
         # printing your high score and how long you survived to acheive the high score
         print ("YOUR HIGH SCORE WAS " + str(high_score))
@@ -199,7 +251,7 @@ def game_starting():
         print ("YOU SURVIVED ABOUT " + str(seconds) + " SECONDS OR EXACTLY " + str(high_score/60) + " seconds")
     
     if key[pygame.K_e]:
-        collitions = True
+        #collitions = True
         game_start = True
 
     # help know how many balls can be on screen 
@@ -209,14 +261,13 @@ def game_starting():
 
     if game_beging:
 
-        #setting diffuculty to hard
+        # setting diffuculty to hard
         if key[pygame.K_h]:
             hard = True
             game_start = True
             game_beging = False
 
-        #setting diffuculty to easy
-
+        # setting diffuculty to easy
         if key[pygame.K_g]:
             hard = False
             game_start = True
@@ -231,14 +282,13 @@ def whitch_ball(obj):
     pygame.draw.rect(screen, WHITE, obj)
 def set_ball_pos(pos):
     # sets pos of balls when
-    pos.x = 30
-    pos.y = 30
-    pos.velocity = [randint(4,8),randint(1,8)]
+    pos.x = 1
+    pos.y = 1
+    pos.velocity = [randint(speed_1,speed_2),randint(speed_3,speed_4)]
 
 def time_to_play_again():
     # resetting all balls to there previuse pos to start the game again
-    
-    global enemy_knoledge, enemy_counter, ball, ball_2, ball_3, ball_4, ball_5, ball_6, ball_7, ball_8, ball_9, ball_10
+    global enemy_knoledge, enemy_counter, ball, ball_2, ball_3, ball_4, ball_5, ball_6, ball_7, ball_8, ball_9, ball_10, size_x, player_size, player_size
     set_ball_pos(ball)
     set_ball_pos(ball_2)
     set_ball_pos(ball_3)
@@ -252,12 +302,13 @@ def time_to_play_again():
             
     enemy_knoledge = 2
     enemy_counter = 2
-    player.x = 500
-    player.y = 30
+    player.x = size_x - player_size
+    player.y = zero
 
 # while loop to run the game
 
 while run:
+    
     # setiing fps
     clock.tick(fps)
     
@@ -270,23 +321,25 @@ while run:
     if collitions:
         collition()
 
-    #using timer to cheack if a ball should be made
+    # using timer to cheack if a ball should be made
     if game_start:
         timer += 1
     
-    if timer > 250:
+    if timer > new_ball_time:
+        print(True)
         movement = True
         enemy_counter += 1
         start_game = True
         timer = 0
+        collitions = True 
     
     # when your score begins to increase
     if start_game:
         score += 1
 
-    if score >= 2500:
-        seconds = round(high_score/60)
-        print ("YOU WIN WITH A HIGHT SCORE OF " + str(score) + " FINISHING IN JUST ABOUT" + str(seconds) + " SECONDS")
+    if score >= winning_timer:
+        seconds = round(high_score/fps)
+        print ("YOU WIN WITH A HIGHT SCORE OF " + str(score) + " FINISHING IN JUST ABOUT " + str(seconds) + " SECONDS")
         run = False
         
         
@@ -330,12 +383,3 @@ while run:
             whitch_ball(ball_9)
         if enemy_knoledge > 10:
             whitch_ball(ball_10)
-
-        
-    
-    
-    
-
-    
-    
-    

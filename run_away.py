@@ -7,6 +7,8 @@ import sys
 import math
 import os
 import time
+# IF TRUE WILL DISPLAY INSTRUCTIONS
+new = False
 # SIZE OF SCREEN
 # if changed the game will change to adapt to the size
 # CHANGE X ONLY
@@ -15,7 +17,7 @@ import time
 size_x = 700 # CHANGE THIS NUMBER ONLY 
 
 # X IS 600 MINIMUM
-#DONT TOUCH THESE THEY GO WIITH LINES ABOVE
+# DONT TOUCH THESE THEY GO WIITH LINES ABOVE
 if size_x < 600:
     size_x = 600
 size_y = size_x/1.5
@@ -79,11 +81,12 @@ start_game = False
 game_start = False
 
 # Starting Lines
-print ("YOU USE THE WASD KEYS TO MOVE ONLY WHEN THE FIRST BALLS IS SENT OUT")
-print ("TO CHOOSE A DIFFICULTY PRESS G = EASY OR H = HARD")
-print ("AFTER PRESSING A DIFFICULTY WAIT A FEW SECONDS AND THE FIRST TWO BALL WILL BE SENT OUT")
-print ("IF YOU DIE PRESS E TO PLAY AGAIN OR YOU CAN PRESS SPACE AT ANYTIME TO END THE GAME")
-print ("HAVE FUN")
+if new:
+    print ("YOU USE THE WASD KEYS TO MOVE ONLY WHEN THE FIRST BALLS IS SENT OUT")
+    print ("TO CHOOSE A DIFFICULTY PRESS G = EASY OR H = HARD")
+    print ("AFTER PRESSING A DIFFICULTY WAIT A FEW SECONDS AND THE FIRST TWO BALL WILL BE SENT OUT")
+    print ("IF YOU DIE PRESS E TO PLAY AGAIN OR YOU CAN PRESS SPACE AT ANYTIME TO END THE GAME")
+    print ("HAVE FUN")
 # ending lines
 move_play = "YOU NEED TO MOVE TO PLAY"
 collide_ball = "PLAYER HAS COLLIDED WITH BALL"
@@ -130,7 +133,7 @@ class Player(object):
             if key[pygame.K_s] and self.y < size_y - player_size:
                 time = 0
                 self.y += player_speed
-            if key[pygame.K_w] and self.y > zero:
+            if key[pygame.K_w] and self.y > zero :
                 time = 0
                 self.y -= player_speed
             if key[pygame.K_a] and self.x > zero:
@@ -251,12 +254,16 @@ def game_starting():
         print ("YOU SURVIVED ABOUT " + str(seconds) + " SECONDS OR EXACTLY " + str(high_score/60) + " seconds")
     
     if key[pygame.K_e]:
-        #collitions = True
+        # collitions = True
         game_start = True
 
     # help know how many balls can be on screen 
     if enemy_counter > enemy_knoledge:
         enemy_knoledge += 1
+
+    # change game difficulty mid game
+    if key[pygame.K_c]:
+        game_beging = True
 
 
     if game_beging:
@@ -315,18 +322,15 @@ while run:
     # cheking if you have a high score
     if score > high_score:
         high_score = score
-
-    # calling function for collition
+    
     game_starting()
-    if collitions:
-        collition()
+
 
     # using timer to cheack if a ball should be made
     if game_start:
         timer += 1
     
     if timer > new_ball_time:
-        print(True)
         movement = True
         enemy_counter += 1
         start_game = True
@@ -343,7 +347,7 @@ while run:
         run = False
         
         
-    #stop the code
+    # stop the code
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             run = False
@@ -356,6 +360,11 @@ while run:
     player.draw()
  
     pygame.display.flip()
+    
+    # calling function for collition
+
+    if collitions:
+        collition()
     
     # making the backround color
     screen.fill(BLACK)
@@ -383,3 +392,4 @@ while run:
             whitch_ball(ball_9)
         if enemy_knoledge > 10:
             whitch_ball(ball_10)
+

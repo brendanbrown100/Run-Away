@@ -68,10 +68,10 @@ new_ball_time = 250
 player_speed = screen_area/60000
 
 # Speed of ball
-speed_1 = 4#screen_area/60000
-speed_2 = 8#screen_area/30000
-speed_3 = 1#screen_area/120000
-speed_4 = 8#screen_area/30000
+speed_1 = screen_area/60000 #4
+speed_2 = screen_area/30000 #8 
+speed_3 = screen_area/120000 #1
+speed_4 = screen_area/30000 #8 
 
 # Scoring variables
 score = 0
@@ -133,10 +133,10 @@ class Player(object):
             if key[pygame.K_s] and self.y < size_y - player_size:
                 time = 0
                 self.y += player_speed
-            if key[pygame.K_w] and self.y > zero :
+            if key[pygame.K_w] and self.y >= zero:
                 time = 0
                 self.y -= player_speed
-            if key[pygame.K_a] and self.x > zero:
+            if key[pygame.K_a] and self.x >= zero:
                 time = 0
                 self.x -= player_speed
             if key[pygame.K_d] and self.x < size_x - player_size:
@@ -170,6 +170,7 @@ class Ball(pygame.sprite.Sprite):
     # Ball class defing movement and colition of ball
     
     def __init__(self, x, y):
+        global speed_1, speed_2, speed_3, speed_4
         # setting pos of the ball
         self.x = x
         self.y = y
@@ -191,7 +192,7 @@ class Ball(pygame.sprite.Sprite):
             self.velocity[0] = -self.velocity[0]
         if self.x <= zero:
             self.velocity[0] = -self.velocity[0]
-        if self.y > size_y - ball_size:
+        if self.y >= size_y - ball_size:
             self.velocity[1] = -self.velocity[1]
         if self.y <= zero:
             self.velocity[1] = -self.velocity[1]
@@ -263,7 +264,7 @@ def game_starting():
 
     # change game difficulty mid game
     if key[pygame.K_c]:
-        game_beging = True
+        game_beging = Truef
 
 
     if game_beging:
@@ -288,10 +289,11 @@ def whitch_ball(obj):
     obj.update()
     pygame.draw.rect(screen, WHITE, obj)
 def set_ball_pos(pos):
+    global speed_1, speed_2, speed_3, speed_4
     # sets pos of balls when
     pos.x = 1
     pos.y = 1
-    pos.velocity = [randint(speed_1,speed_2),randint(speed_3,speed_4)]
+    pos.velocity = [randint(int(speed_1),int(speed_2)),randint(int(speed_3),int(speed_4))]
 
 def time_to_play_again():
     # resetting all balls to there previuse pos to start the game again
@@ -392,4 +394,5 @@ while run:
             whitch_ball(ball_9)
         if enemy_knoledge > 10:
             whitch_ball(ball_10)
+
 
